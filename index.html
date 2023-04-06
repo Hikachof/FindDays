@@ -4,52 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>予定調整</title>
+    <style>
+        #calendar {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 8px;
+        }
+    
+        .day {
+            padding: 8px;
+            background-color: #424242;
+            border: 1px solid #a85151;
+            border-radius: 4px;
+            text-align: center;
+            user-select: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: #fff;
+            background-color: #424242;
+        }
+    
+        .day.selected {
+          background-color: #007bff;
+          color: #fff;
+          background-color: #007bff;
+        }
+
+        .day:hover {
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+        }
+    </style>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('schedule-form');
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
+        let selectedDates = new Set();
+        
+        function generateCalendar() {
+            const year = parseInt(document.getElementById("year").value);
+            const month = parseInt(document.getElementById("month").value);
+            const calendarElement = document.getElementById("calendar");
+            calendarElement.innerHTML = "";
 
-                const formData = new FormData(form);
-                const dates = formData.getAll('datetime');
-                const sender = 'hikachofaw@gmail.com'; // Replace with the sender's unique identifier
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0);
+            
+            for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                const date = new Date(d);
+                const dateString = date.toISOString().split("T")[0];
+                const dateElement = document.createElement("div");
+                dateElement.classList.add("day");
+                dateElement.textContent = `${date.getDate()}`;
+                dateElement.dataset.date = dateString;
 
-                const data = {
-                    sender: sender,
-                    dates: dates
+                dateElement.onclick = function() {
+                const selectedDate = this.dataset.date;
+                if (selectedDates.has(selectedDate)) {
+                    selectedDates.delete(selectedDate);
+                    this.classList.remove("selected");
+                } else {
+                    selectedDates.add(selectedDate);
+                    this.classList.add("selected");
+                }
                 };
 
-                // Replace the URL with the actual URL of your Google Apps Script web app
-                const url = 'https://script.google.com/macros/s/AKfycbzMQgKuvkK3m_5xAWPSyze0kVyqRLHioKyW00G4EGYHeAPx3bg_9opbA2nwo4i82z2n/exec';
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
+                calendarElement.appendChild(dateElement);
+            }
+        }
+        
+        function submitForm() {
+            const sender = document.getElementById("email").value;
+            const datesArray = Array.from(selectedDates);
+            const data = {
+                sender: sender,
+                dates: datesArray
+            };
+            
+            const scriptURL = "https://script.google.com/macros/s/your-script-id/exec";
+            fetch(scriptURL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => console.log("Success!", response))
+            .catch(error => console.error("Error:", error));
+        }
 
-                if (response.ok) {
-                    alert('データが送信されました');
-                } else {
-                    alert('データの送信に失敗しました');
-                }
-            });
+        // 既存のコードはそのまま
+        document.getElementById("prevMonth").addEventListener("click", () => {
+        currentMonth.setMonth(currentMonth.getMonth() - 1);
+        updateCalendar();
         });
+
+        document.getElementById("nextMonth").addEventListener("click", () => {
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
+        updateCalendar();
+        });
+
+        document.getElementById("prevYear").addEventListener("click", () => {
+        currentMonth.setFullYear(currentMonth.getFullYear() - 1);
+        updateCalendar();
+        });
+
+        document.getElementById("nextYear").addEventListener("click", () => {
+        currentMonth.setFullYear(currentMonth.getFullYear() + 1);
+        updateCalendar();
+        });
+
     </script>
 </head>
 <body>
     <h1>予定調整</h1>
     <p>予定が空いている日時を選択してください。</p>
-    <form id="schedule-form">
-        <label>
-        <input type="checkbox" name="datetime" value="2023-04-05T10:00">
-        2023年4月5日 10:00
-    </label>
-    <label>
-        <input type="checkbox" name="datetime" value="2023-04-05T14:00">
-        2023年4月5日 14:00
-    </label>
-    <!-- 他の日時も同様に追加 -->
-
-        <button type="submit">送信</button>
-    </form>
+    <div>
+        <label for="email">メールアドレス：</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="year">年：</label>
+        <input type="number" id="year" name="year" value="2023" min="1900" max="2100">
+        <label for="month">月：</label>
+        <input type="number" id="month" name="month" value="4" min="1" max="12">
+        <button type="button" onclick="generateCalendar()">カレンダーを表示</button>
+    </div>
+    <div id="calendar"></div>
+    <button type="button" onclick="submitForm()">送信</button>
 </body>
 </html>
