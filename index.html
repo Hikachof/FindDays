@@ -26,14 +26,29 @@
         }
     
         .day.selected {
-          background-color: #007bff;
-          color: #fff;
-          background-color: #007bff;
+          background-color: #007bff !important;
+          color: #fff !important;
         }
 
         .day:hover {
             box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
         }
+
+        .day.sun {
+            background-color: #ff8e8e;
+            color: #000;
+        }
+
+        .day.sat {
+            background-color: #8ec6ff;
+            color: #000;
+        }
+
+        .day.weekday {
+            background-color: #424242;
+            color: #fff;
+        }
+
     </style>
     <script>
         let selectedDates = new Set();
@@ -52,19 +67,33 @@
                 const dateString = date.toISOString().split("T")[0];
                 const dateElement = document.createElement("div");
                 dateElement.classList.add("day");
-                dateElement.textContent = `${date.getDate()}`;
+
+                // 曜日に応じてクラスを追加
+                const dayOfWeek = date.getDay();
+                if (dayOfWeek === 0) {
+                    dateElement.classList.add("sun");
+                } else if (dayOfWeek === 6) {
+                    dateElement.classList.add("sat");
+                } else {
+                    dateElement.classList.add("weekday");
+                }
+
+                // 日付データを要素に関連付ける
                 dateElement.dataset.date = dateString;
 
                 dateElement.onclick = function() {
-                const selectedDate = this.dataset.date;
-                if (selectedDates.has(selectedDate)) {
-                    selectedDates.delete(selectedDate);
-                    this.classList.remove("selected");
-                } else {
-                    selectedDates.add(selectedDate);
-                    this.classList.add("selected");
-                }
+                    const selectedDate = this.dataset.date;
+                    if (selectedDates.has(selectedDate)) {
+                        selectedDates.delete(selectedDate);
+                        this.classList.remove("selected");
+                    } else {
+                        selectedDates.add(selectedDate);
+                        this.classList.add("selected");
+                    }
                 };
+
+                // 日付を表示
+                dateElement.textContent = date.getDate();
 
                 calendarElement.appendChild(dateElement);
             }
@@ -78,7 +107,7 @@
                 dates: datesArray
             };
             
-            const scriptURL = "https://script.google.com/macros/s/your-script-id/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwUkUwr3IcDI2yNqz5i9gjZYvInnMy-0KFPnjqymjaJWdr7nNmmWj-bK2w3bZnCQPY/exec";
             fetch(scriptURL, {
                 method: "POST",
                 mode: "no-cors",
@@ -119,7 +148,7 @@
     <h1>予定調整</h1>
     <p>予定が空いている日時を選択してください。</p>
     <div>
-        <label for="email">メールアドレス：</label>
+        <label for="email">名前書いてください：</label>
         <input type="email" id="email" name="email" required>
     </div>
     <div>
@@ -127,7 +156,7 @@
         <input type="number" id="year" name="year" value="2023" min="1900" max="2100">
         <label for="month">月：</label>
         <input type="number" id="month" name="month" value="4" min="1" max="12">
-        <button type="button" onclick="generateCalendar()">カレンダーを表示</button>
+        <button type="button" onclick="generateCalendar()">日にちを表示</button>
     </div>
     <div id="calendar"></div>
     <button type="button" onclick="submitForm()">送信</button>
