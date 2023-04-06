@@ -101,13 +101,17 @@
         
         function submitForm() {
             const sender = document.getElementById("email").value;
+            if (!sender) {
+                alert("名前を入力してください。");
+                return;
+            }
             const datesArray = Array.from(selectedDates);
             const data = {
                 sender: sender,
                 dates: datesArray
             };
             
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwUkUwr3IcDI2yNqz5i9gjZYvInnMy-0KFPnjqymjaJWdr7nNmmWj-bK2w3bZnCQPY/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbyDOHEnRjsPPRcF3yd8TqbaubQ_x-YYbO49d3HzDh6skbKSjVOjO4zZRgAHPuw0CrXV/exec";
             fetch(scriptURL, {
                 method: "POST",
                 mode: "no-cors",
@@ -117,8 +121,14 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => console.log("Success!", response))
-            .catch(error => console.error("Error:", error));
+            .then(response => {
+                console.log("Success!", response);
+                alert("送信が完了しました。"); // 送信完了時にアラートを表示
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("送信に失敗しました。再度お試しください。"); // 送信失敗時にアラートを表示
+            });
         }
 
         // 既存のコードはそのまま
