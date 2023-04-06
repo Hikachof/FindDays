@@ -108,10 +108,11 @@
             const datesArray = Array.from(selectedDates);
             const data = {
                 sender: sender,
-                dates: datesArray
+                dates: datesArray,
+                sendid: "Ce7809816ba64fc89aa8f300545a7356a"
             };
             
-            const scriptURL = "https://script.google.com/macros/s/AKfycbyqQT9uzmWnJYqVLFMl6LhDzDB-TMQvZaHe-e_unJuRTlNJUuPKpa5AQkI3HlboYltl/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwrhoUpcBBWysbOTwyco2xn1oQHZAFkgLO8-hoL85YN5xfMVvc-3Oww3gaZaQLK-Cw3/exec";
             fetch(scriptURL, {
                 method: "POST",
                 mode: "no-cors",
