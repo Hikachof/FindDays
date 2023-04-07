@@ -64,7 +64,8 @@
             
             for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
                 const date = new Date(d);
-                const dateString = date.toISOString().split("T")[0];
+                //const dateString = date.toISOString().split("T")[0];
+                const dateString = date.toLocaleDateString("ja-JP"); // この行を変更
                 const dateElement = document.createElement("div");
                 dateElement.classList.add("day");
 
@@ -109,7 +110,7 @@
             const data = {
                 sender: sender,
                 dates: datesArray,
-                sendid: "C2db02fe061fc968e97dafb669de469e2"
+                sendid: "Ce7809816ba64fc89aa8f300545a7356a"
             };
             
             const scriptURL = "https://script.google.com/macros/s/AKfycbwrhoUpcBBWysbOTwyco2xn1oQHZAFkgLO8-hoL85YN5xfMVvc-3Oww3gaZaQLK-Cw3/exec";
